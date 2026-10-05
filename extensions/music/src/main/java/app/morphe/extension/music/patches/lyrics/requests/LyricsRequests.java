@@ -573,6 +573,8 @@ public final class LyricsRequests {
         }
         s = java.text.Normalizer.normalize(s, java.text.Normalizer.Form.NFKC);
         s = s.toLowerCase(Locale.ROOT);
+        // Compare metadata across Traditional/Simplified spellings used by different providers.
+        // ICU does not map 妳 to 你, so fold this observed title variant explicitly for matching.
         s = CharactersConverter.toSimplified(s).replace('妳', '你');
         s = stripDecorations(s);
         s = foldPunctuation(s);
