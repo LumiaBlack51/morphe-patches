@@ -1460,6 +1460,8 @@ public final class LyricsManager {
             long wait = now < endgameAt ? Math.min(remaining, endgameAt - now) : remaining;
             Future<ProviderFetch> f;
             try {
+                // Recheck stale requests every 100 ms, trading about 10 idle wakeups/s for prompt cancellation.
+                // Completed results wake poll immediately; provider timeouts and stage deadlines are unchanged.
                 f = cs.poll(Math.min(wait, 100), TimeUnit.MILLISECONDS);
             } catch (InterruptedException ex) {
                 Logger.printDebug(() -> "Interrupted polling provider futures", ex);
