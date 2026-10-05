@@ -18,6 +18,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.InterruptedIOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
@@ -104,6 +105,10 @@ public final class LyricsRequests {
      * User-Agent header, and rate limits requests that do not.
      */
     static HttpURLConnection openConnection(String url) throws IOException {
+        // A cancelled provider may finish one blocking request and try the next one.
+        if (Thread.currentThread().isInterrupted()) {
+            throw new InterruptedIOException("Lyrics lookup cancelled");
+        }
         HttpURLConnection connection = Requester.openConnection(url);
         connection.setRequestMethod("GET");
         connection.setConnectTimeout(CONNECT_TIMEOUT_MILLISECONDS);
@@ -117,6 +122,10 @@ public final class LyricsRequests {
      */
     static HttpURLConnection openConnection(String url, int connectTimeoutMs,
             int readTimeoutMs, Map<String, String> headers) throws IOException {
+        // A cancelled provider may finish one blocking request and try the next one.
+        if (Thread.currentThread().isInterrupted()) {
+            throw new InterruptedIOException("Lyrics lookup cancelled");
+        }
         HttpURLConnection connection = Requester.openConnection(url);
         connection.setRequestMethod("GET");
         connection.setConnectTimeout(connectTimeoutMs);
@@ -159,6 +168,10 @@ public final class LyricsRequests {
 
     private static HttpURLConnection postConnection(String url, String body, String contentType,
                                                    Map<String, String> headers) throws IOException {
+        // A cancelled provider may finish one blocking request and try the next one.
+        if (Thread.currentThread().isInterrupted()) {
+            throw new InterruptedIOException("Lyrics lookup cancelled");
+        }
         HttpURLConnection connection = Requester.openConnection(url);
         connection.setRequestMethod("POST");
         connection.setConnectTimeout(CONNECT_TIMEOUT_MILLISECONDS);
