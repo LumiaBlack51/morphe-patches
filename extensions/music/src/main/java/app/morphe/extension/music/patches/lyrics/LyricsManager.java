@@ -1500,7 +1500,7 @@ public final class LyricsManager {
 
         boolean accept(@Nullable ProviderFetch pf, List<ScoredCandidate> scoreCandidates,
                        boolean stage12) {
-            if (pf == null) {
+            if (pf == null || !pf.highMatch()) {
                 return false;
             }
             Lyrics fetched = pf.lyrics();
@@ -1511,10 +1511,6 @@ public final class LyricsManager {
             final int rank = LyricsRequests.syncRank(fetched);
             final int composite = LyricsRequests.composite(match, fetched, pf.penalty());
             scoreCandidates.add(new ScoredCandidate(composite, rank, fetched));
-
-            if (!pf.highMatch()) {
-                return false;
-            }
 
             if (rank > bestFallbackRank) {
                 bestFallback = fetched;
